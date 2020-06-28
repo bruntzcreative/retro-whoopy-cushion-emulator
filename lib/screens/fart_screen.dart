@@ -1,22 +1,14 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
 import 'package:whoopy_cushion/repositories/sound_repository.dart';
+import 'package:whoopy_cushion/screens/about_screen.dart';
+import 'package:whoopy_cushion/screens/choose_fart_screen.dart';
 
-class FartScreen extends StatefulWidget {
+class FartScreen extends StatelessWidget {
   static const routeName = '/';
   const FartScreen({Key key, @required this.soundRepository}) : super(key: key);
   final SoundRepository soundRepository;
-  @override
-  _FartScreenState createState() => _FartScreenState();
-}
-
-class _FartScreenState extends State<FartScreen> {
-  int streamId;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,22 +20,20 @@ class _FartScreenState extends State<FartScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: IconButton(icon: Icon(Icons.info_outline), onPressed: () {}),
-                )
+                _OpenContainerWrapper(openBuilder: (BuildContext context, VoidCallback _) {
+                  return AboutScreen();
+                }, closedBuilder: (BuildContext _, VoidCallback openContainer) {
+                  return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: IconButton(icon: Icon(Icons.info_outline), onPressed: openContainer));
+                })
               ],
             ),
             Expanded(
                 child: Container(
-              color: Colors.blue,
               child: RaisedButton(
                 onPressed: () async {
-                  if (streamId != null) {
-                    widget.soundRepository.pool.stop(streamId);
-                  }
-                  streamId = await widget.soundRepository.pool
-                      .play(widget.soundRepository.farts[26].soundId);
+                  soundRepository.playRandom();
                 },
                 child: Text('play'),
               ),
@@ -51,27 +41,38 @@ class _FartScreenState extends State<FartScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: IconButton(icon: Icon(Icons.info_outline), onPressed: () {}),
-                )
+                _OpenContainerWrapper(openBuilder: (BuildContext context, VoidCallback _) {
+                  return ChooseFartScreen(soundRepository: soundRepository);
+                }, closedBuilder: (BuildContext _, VoidCallback openContainer) {
+                  return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: IconButton(icon: Icon(Icons.info_outline), onPressed: openContainer));
+                })
               ],
             ),
           ],
-        )
+        ));
+  }
+}
 
-        // SizedBox.expand(
-        //   child: Center(
-        //     child: RaisedButton(
-        //         onPressed: () async {
-        //           if (streamId != null) {
-        //             _soundRepository.pool.stop(streamId);
-        //           }
-        //           streamId = await _soundRepository.pool.play(_soundRepository.farts[26].soundId);
-        //         },
-        //         child: Text('play')),
-        //   ),
-        // ),
-        );
+class _OpenContainerWrapper extends StatelessWidget {
+  const _OpenContainerWrapper({
+    this.openBuilder,
+    this.closedBuilder,
+    Key key,
+  }) : super(key: key);
+  final Function openBuilder;
+  final Function closedBuilder;
+  @override
+  Widget build(BuildContext context) {
+    return OpenContainer(
+        transitionDuration: Duration(milliseconds: 230),
+        closedShape: CircleBorder(),
+        closedElevation: 0,
+        openElevation: 0,
+        // closedColor: Theme.of(context).colorScheme.inActive,
+        // openColor: Theme.of(context).colorScheme.inActive,
+        closedBuilder: closedBuilder,
+        openBuilder: openBuilder);
   }
 }

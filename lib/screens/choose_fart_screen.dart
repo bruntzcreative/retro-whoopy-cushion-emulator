@@ -1,78 +1,98 @@
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 
 import 'package:whoopy_cushion/repositories/sound_repository.dart';
 
-class ChooseFartScreen extends StatefulWidget {
+class ChooseFartScreen extends StatelessWidget {
   static const routeName = '/ChooseFartScreen';
-  const ChooseFartScreen({Key key, this.soundRepository}) : super(key: key);
+  const ChooseFartScreen({
+    Key key,
+    @required this.soundRepository,
+    // @required this.globalRepository,
+  })  : assert(soundRepository != null),
+        // assert(globalRepository != null),
+        super(key: key);
   final SoundRepository soundRepository;
-  @override
-  _ChooseFartScreenState createState() => _ChooseFartScreenState();
-}
-
-class _ChooseFartScreenState extends State<ChooseFartScreen> {
-  int streamId;
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  // final GlobalRepository globalRepository;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.green,
-        // appBar: AppBar(),
-        body: Column(
-          children: <Widget>[
-            SizedBox(height: MediaQuery.of(context).padding.top),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: IconButton(icon: Icon(Icons.info_outline), onPressed: () {}),
-                )
-              ],
+      backgroundColor: Colors.lightGreenAccent[400],
+      body: Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }),
+              )
+            ],
+          ),
+          Expanded(
+            child: ListView(
+              children: Fart.values
+                  .map(
+                    (e) => _FartButton(
+                      text: EnumToString.parseCamelCase(e),
+                      onTap: () {
+                        soundRepository.playChoice(e);
+                      },
+                    ),
+                  )
+                  .toList(),
             ),
-            Expanded(
-                child: Container(
-              color: Colors.blue,
-              child: RaisedButton(
-                onPressed: () async {
-                  if (streamId != null) {
-                    widget.soundRepository.pool.stop(streamId);
-                  }
-                  streamId = await widget.soundRepository.pool
-                      .play(widget.soundRepository.farts[26].soundId);
-                },
-                child: Text('play'),
-              ),
-            )),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: IconButton(icon: Icon(Icons.info_outline), onPressed: () {}),
-                )
-              ],
-            ),
-          ],
-        )
+          )
+        ],
+      ),
+    );
+  }
+}
 
-        // SizedBox.expand(
-        //   child: Center(
-        //     child: RaisedButton(
-        //         onPressed: () async {
-        //           if (streamId != null) {
-        //             _soundRepository.pool.stop(streamId);
-        //           }
-        //           streamId = await _soundRepository.pool.play(_soundRepository.farts[26].soundId);
-        //         },
-        //         child: Text('play')),
-        //   ),
-        // ),
-        );
+class _FartButton extends StatelessWidget {
+  const _FartButton({
+    Key key,
+    this.text,
+    this.onTap,
+  }) : super(key: key);
+
+  final String text;
+  final Function onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: FlatButton(
+        onPressed: onTap,
+        padding: EdgeInsets.all(0.0),
+        child: Stack(
+          children: <Widget>[
+            Image.asset('assets/buttons/button.png'),
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    text,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline4
+                        .copyWith(fontWeight: FontWeight.w500, color: Colors.white),
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

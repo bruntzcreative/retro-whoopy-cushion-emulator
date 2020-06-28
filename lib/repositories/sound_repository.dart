@@ -1,5 +1,6 @@
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/services.dart';
+import 'dart:math';
 import 'package:soundpool/soundpool.dart';
 
 class SoundRepository {
@@ -13,7 +14,19 @@ class SoundRepository {
     });
   }
 
-  void playRandom() {}
+  void playRandom() {
+    Random random = new Random();
+    int randomNumber = random.nextInt(farts.length);
+    pool.play(farts[randomNumber].soundId);
+  }
+
+  void playChoice(Fart fart) {
+    FartRef fartRef = farts.firstWhere(
+      (FartRef fartRef) => fartRef.fart == fart,
+      orElse: () => null,
+    );
+    pool.play(fartRef.soundId);
+  }
 
   void playAll() {}
 }

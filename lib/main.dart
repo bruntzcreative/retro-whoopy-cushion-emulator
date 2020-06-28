@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:whoopy_cushion/blocs/simple_bloc_delegate.dart';
 import 'package:whoopy_cushion/repositories/global_repository.dart';
 import 'package:whoopy_cushion/repositories/sound_repository.dart';
 import 'package:whoopy_cushion/screens/about_screen.dart';
 import 'package:whoopy_cushion/screens/choose_fart_screen.dart';
 import 'package:whoopy_cushion/screens/fart_screen.dart';
+import 'package:flutter/scheduler.dart' show timeDilation;
 
 void main() {
+  timeDilation = 10;
   WidgetsFlutterBinding.ensureInitialized();
   BlocSupervisor.delegate = SimpleBlocDelegate();
 
@@ -15,10 +19,12 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  GlobalRepository globalRepository;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       builder: (context, child) {
+        // globalRepository = GlobalRepository(mq: MediaQuery.of(context));
         return MultiRepositoryProvider(
           providers: [
             RepositoryProvider(
@@ -33,6 +39,9 @@ class MyApp extends StatelessWidget {
       },
       title: 'Retro Whoopy Cushion Emulator',
       theme: ThemeData(
+        textTheme: GoogleFonts.vt323TextTheme(
+          Theme.of(context).textTheme,
+        ),
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
@@ -49,6 +58,7 @@ class MyApp extends StatelessWidget {
               builder: (context) {
                 return ChooseFartScreen(
                   soundRepository: RepositoryProvider.of<SoundRepository>(context),
+                  // globalRepository: RepositoryProvider.of<GlobalRepository>(context),
                 );
               },
             );

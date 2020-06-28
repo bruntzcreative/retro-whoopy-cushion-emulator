@@ -1,50 +1,53 @@
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'package:whoopy_cushion/repositories/sound_repository.dart';
+import 'package:whoopy_cushion/widgets/retro_back_button.dart';
 
 class ChooseFartScreen extends StatelessWidget {
   static const routeName = '/ChooseFartScreen';
   const ChooseFartScreen({
     Key key,
     @required this.soundRepository,
-    // @required this.globalRepository,
   })  : assert(soundRepository != null),
-        // assert(globalRepository != null),
         super(key: key);
   final SoundRepository soundRepository;
-  // final GlobalRepository globalRepository;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightGreenAccent[400],
-      body: Column(
+      backgroundColor: Color(0xfffe00fe),
+      body: Stack(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }),
-              )
-            ],
-          ),
-          Expanded(
-            child: ListView(
-              children: Fart.values
-                  .map(
-                    (e) => _FartButton(
-                      text: EnumToString.parseCamelCase(e),
+          AnimationLimiter(
+            child: ListView.builder(
+              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 68),
+              itemCount: Fart.values.length,
+              itemBuilder: (context, index) => AnimationConfiguration.staggeredList(
+                position: index,
+                child: SlideAnimation(
+                  verticalOffset: 50.0,
+                  child: FadeInAnimation(
+                    child: _FartButton(
+                      text: EnumToString.parseCamelCase(Fart.values[index]),
                       onTap: () {
-                        soundRepository.playChoice(e);
+                        soundRepository.playChoice(Fart.values[index]);
                       },
                     ),
-                  )
-                  .toList(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+            child: RetroButton(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              imagePathDown: 'assets/buttons/back-green-down.png',
+              imagePathUp: 'assets/buttons/back-green-up.png',
             ),
           )
         ],
@@ -53,7 +56,7 @@ class ChooseFartScreen extends StatelessWidget {
   }
 }
 
-class _FartButton extends StatelessWidget {
+class _FartButton extends StatefulWidget {
   const _FartButton({
     Key key,
     this.text,
@@ -64,29 +67,64 @@ class _FartButton extends StatelessWidget {
   final Function onTap;
 
   @override
+  __FartButtonState createState() => __FartButtonState();
+}
+
+class __FartButtonState extends State<_FartButton> {
+  bool up = true;
+
+  buttonDown() {
+    setState(() {
+      up = !up;
+    });
+  }
+
+  buttonUp() {
+    setState(() {
+      up = !up;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: FlatButton(
-        onPressed: onTap,
-        padding: EdgeInsets.all(0.0),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) {
+          buttonDown();
+        },
+        onTapUp: (_) {
+          buttonUp();
+        },
+        onTap: () {
+          widget.onTap();
+        },
         child: Stack(
           children: <Widget>[
-            Image.asset('assets/buttons/button.png'),
+            up
+                ? Image.asset('assets/buttons/large-green-up.png')
+                : Image.asset('assets/buttons/large-green-down.png'),
             Positioned.fill(
               child: Align(
                 alignment: Alignment.center,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                    text,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline4
-                        .copyWith(fontWeight: FontWeight.w500, color: Colors.white),
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      widget.text,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          .copyWith(fontWeight: FontWeight.w500, color: Colors.white),
+                      overflow: TextOverflow.fade,
+                      softWrap: false,
+                    ),
+                    if (up)
+                      SizedBox(
+                        height: 8,
+                      )
+                  ],
                 ),
               ),
             )

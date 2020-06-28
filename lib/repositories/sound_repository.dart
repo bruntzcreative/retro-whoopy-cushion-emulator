@@ -27,8 +27,6 @@ class SoundRepository {
     );
     pool.play(fartRef.soundId);
   }
-
-  void playAll() {}
 }
 
 class FartRef {

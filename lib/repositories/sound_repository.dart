@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:soundpool/soundpool.dart';
 
 class SoundRepository {
-  Soundpool _pool = Soundpool(streamType: StreamType.notification);
+  Soundpool _pool = Soundpool(streamType: StreamType.music);
   List<FartRef> _farts = [];
   Random _random = new Random();
   Future<void> loadSounds() async {

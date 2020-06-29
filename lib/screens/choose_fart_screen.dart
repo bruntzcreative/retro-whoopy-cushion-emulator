@@ -32,7 +32,7 @@ class ChooseFartScreen extends StatelessWidget {
                     child: _FartButton(
                       text: EnumToString.parseCamelCase(Fart.values[index]),
                       onTap: () {
-                        // soundRepository.playChoice(Fart.values[index]);
+                        soundRepository.playChoice(Fart.values[index]);
                       },
                     ),
                   ),

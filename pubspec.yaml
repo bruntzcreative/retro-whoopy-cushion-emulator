@@ -41,6 +41,7 @@ flutter:
     - assets/farts/
     - assets/buttons/
     - assets/whoopy.flr
+    - google_fonts/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

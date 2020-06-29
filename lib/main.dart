@@ -17,10 +17,14 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  final SoundRepository soundRepository = SoundRepository()..loadSounds();
+  final SoundRepository soundRepository = SoundRepository();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: (context, child) {
+        soundRepository.loadSounds();
+        return child;
+      },
       title: 'Retro Whoopy Cushion Emulator',
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFF00fc00),
@@ -36,7 +40,9 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(
               fullscreenDialog: true,
               builder: (context) {
-                return AboutScreen();
+                return AboutScreen(
+                  soundRepository: soundRepository,
+                );
               },
             );
           case ChooseFartScreen.routeName:
@@ -54,6 +60,7 @@ class MyApp extends StatelessWidget {
                 return FartScreen(soundRepository: soundRepository);
               },
             );
+
           default:
             return MaterialPageRoute(
               builder: (_) => Scaffold(

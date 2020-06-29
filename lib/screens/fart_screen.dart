@@ -47,9 +47,9 @@ class FartScreen extends StatelessWidget {
                   return GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () async {
-                      controller.forward(from: 0.0);
+                      // controller.forward(from: 0.0);
                       soundRepository.playRandom();
-                      _controls.play('fart');
+                      // _controls.play('fart');
                     },
                     child: FlareActor(
                       "assets/whoopy.flr",
@@ -71,7 +71,7 @@ class FartScreen extends StatelessWidget {
               ),
             ),
             onTap: () {
-              Navigator.of(context).pushNamed(ChooseFartScreen.routeName);
+              // Navigator.of(context).pushNamed(ChooseFartScreen.routeName);
             },
           ),
         ],
